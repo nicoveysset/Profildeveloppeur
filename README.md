@@ -8,7 +8,7 @@ Application Android développée avec Jetpack Compose affichant la fiche de prof
 - Passages de paramètres
 - Modifiers et chaînage de Modifiers
 - Distinction entre padding externe et padding interne
-- Callbacks d'événements (UDF)
+- Callbacks d'événements
 - Previews d'interface avec données variables
 - Accessibilité de base
 
