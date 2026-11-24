@@ -4,20 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -28,7 +35,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProfileScreen(
+                    ProductHomeScreen(
+                        featuredProduct = sampleProduct(),
+                        onFeaturedProductClick = { },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -37,192 +46,406 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// COMPOSABLES
-
-/**
- * en tete du profil
- */
 @Composable
-fun ProfileHeader(
-    name: String,
-    role: String,
-    bio: String,
+fun HomeHeader(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Text(
-            text = name,
-            modifier = Modifier.padding(bottom = 4.dp)
+            text = "Product Explorer",
+            style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = role,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            text = bio
+            text = "Découvrez les produits du moment",
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
-/**
- * skill badge
- */
 @Composable
-fun SkillBadge(
-    skillName: String,
+fun SearchPreviewBar(
     modifier: Modifier = Modifier
 ) {
-    Surface(modifier = modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
+    ) {
         Text(
-            text = "• $skillName",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            text = "Rechercher un produit...",
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
-/**
- * Bouton d action
- */
 @Composable
-fun ActionButton(
-    label: String,
+fun ProductQuickInfoRow(
+    price: Double,
+    rating: Double,
+    stock: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = "$price €",
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "★ $rating",
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "$stock en stock",
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+fun FeaturedProductSection(
+    product: ProductUi,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier
-            .clickable(
-                role = Role.Button,
-                onClick = onClick
-            )
-            .semantics {
-                contentDescription = "Action : $label"
-            }
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 4.dp
     ) {
-        Text(
-            text = label,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Produit mis en avant",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = product.title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = product.brand,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ProductQuickInfoRow(
+                price = product.price,
+                rating = product.rating,
+                stock = product.stock
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = onClick) {
+                Text(text = "Voir le produit")
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductHomeScreen(
+    featuredProduct: ProductUi,
+    onFeaturedProductClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        HomeHeader()
+        Spacer(modifier = Modifier.height(24.dp))
+        SearchPreviewBar()
+        Spacer(modifier = Modifier.height(24.dp))
+        FeaturedProductSection(
+            product = featuredProduct,
+            onClick = onFeaturedProductClick
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductHomeScreenPreview() {
+    MaterialTheme {
+        ProductHomeScreen(
+            featuredProduct = sampleProduct(),
+            onFeaturedProductClick = {}
         )
     }
 }
 
-/**
- * Assemblage des composants
- */
+data class ProductUi(
+    val title: String,
+    val brand: String,
+    val category: String,
+    val description: String,
+    val price: Double,
+    val discountPercentage: Double,
+    val rating: Double,
+    val stock: Int,
+    val warrantyInformation: String,
+    val shippingInformation: String
+)
+
+fun sampleProduct(): ProductUi {
+    return ProductUi(
+        title = "Smartphone Toto X",
+        brand = "TotoTech",
+        category = "Smartphones",
+        description = "Un smartphone léger avec un écran lumineux, une bonne autonomie et un design moderne.",
+        price = 699.99,
+        discountPercentage = 12.9,
+        rating = 4.6,
+        stock = 34,
+        warrantyInformation = "Garantie constructeur 2 ans",
+        shippingInformation = "Livraison estimée: 3 à 5 jours ouvrés"
+    )
+}
+
+fun sampleProductOutOfStock(): ProductUi {
+    return ProductUi(
+        title = "Casque Audio Pulse",
+        brand = "SoundPeak",
+        category = "Audio",
+        description = "Un casque confortable conçu pour écouter de la musique, " +
+                "suivre des cours en ligne et travailler dans de bonnes conditions.",
+        price = 129.99,
+        discountPercentage = 0.0,
+        rating = 4.2,
+        stock = 0,
+        warrantyInformation = "Garantie constructeur : 1 an",
+        shippingInformation = "Produit temporairement indisponible"
+    )
+}
+
 @Composable
-fun ProfileCard(
-    name: String,
-    role: String,
-    bio: String,
-    skills: List<String>,
-    isAvailable: Boolean,
-    onContactClick: () -> Unit,
+fun ProductImage(
+    productTitle: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(modifier = modifier) {
-        Column(
-            modifier = Modifier.padding(16.dp) // Padding INTERNE de la fiche
-        ) {
-            // En-tête du profil
-            ProfileHeader(
-                name = name,
-                role = role,
-                bio = bio,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+    Image(
+        painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+        contentDescription = "Image du produit $productTitle",
+        modifier = modifier
+    )
+}
 
-            // Disponibilité
+@Composable
+fun ProductHeader(
+    title: String,
+    brand: String,
+    category: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Text(
+            text = brand,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = category,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+fun ProductPriceCard(
+    price: Double,
+    discountPercentage: Double,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = if (isAvailable) "Statut : Disponible pour de nouveaux projets" else "Statut : Indisponible actuellement",
-                modifier = Modifier.padding(bottom = 12.dp)
+                text = "$price €",
+                style = MaterialTheme.typography.headlineSmall
             )
-
-            // Liste des compétences
             Text(
-                text = "Compétences clés :",
-                modifier = Modifier.padding(bottom = 6.dp)
-            )
-            Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                skills.forEach { skill ->
-                    SkillBadge(
-                        skillName = skill,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                }
-            }
-
-            // Bouton d'action
-            ActionButton(
-                label = "Me contacter",
-                onClick = onContactClick,
-                modifier = Modifier.fillMaxWidth() // Chaînage de Modifier
+                text = "Remise : $discountPercentage %",
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
 }
 
-/**
- * Ecran principal
- */
 @Composable
-fun ProfileScreen(
+fun ProductRating(
+    rating: Double,
     modifier: Modifier = Modifier
 ) {
-    ProfileCard(
-        name = "Nicolas",
-        role = "Développeur Mobile & Embarqué",
-        bio = "Passionné par l'architecture logicielle, Kotlin et Jetpack Compose.",
-        skills = listOf("Kotlin", "Jetpack Compose", "Docker", "Python"),
-        isAvailable = true,
-        onContactClick = {
-            // Callback d'événement sans logique applicative avancée
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(24.dp) // Padding EXTERNE appliqué par le parent
-    )
-}
-
-// PREVIEWS
-
-/**
- * Profil
- */
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenAvailablePreview() {
-    MaterialTheme {
-        ProfileCard(
-            name = "Nicolas Veysset",
-            role = "Développeur Android Junior",
-            bio = "Spécialisé en Python.",
-            skills = listOf("Java", "Python", "Git"),
-            isAvailable = true,
-            onContactClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+    Row(modifier = modifier) {
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = "Note du produit"
+        )
+        Text(
+            text = "$rating / 5",
+            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
 
-/**
- * profil indisponible
- */
-@Preview(showBackground = true)
 @Composable
-fun ProfileScreenUnavailablePreview() {
-    MaterialTheme {
-        ProfileCard(
-            name = "Alexandre Dupont",
-            role = "Développeur Full-Stack",
-            bio = "En poste actuellement. Recherche de nouvelles opportunités.",
-            skills = listOf("React", "Node.js", "PostgreSQL", "Docker"),
-            isAvailable = false,
-            onContactClick = {},
+fun ProductAvailabilityCard(
+    stock: Int,
+    shippingInformation: String,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Disponibilité",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Stock : $stock unités",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = shippingInformation,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun ProductDescription(
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Description",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun ProductWarrantyField(
+    warrantyInformation: String,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = warrantyInformation,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text(text = "Garantie") },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AddToCartButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Text(text = "Ajouter au panier")
+    }
+}
+
+@Composable
+fun ProductDetailScreen(
+    product: ProductUi,
+    onAddToCartClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        ProductImage(
+            productTitle = product.title,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(bottom = 16.dp)
+        )
+
+        ProductHeader(
+            title = product.title,
+            brand = product.brand,
+            category = product.category
+        )
+
+        ProductPriceCard(
+            price = product.price,
+            discountPercentage = product.discountPercentage,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+
+        ProductRating(
+            rating = product.rating,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+
+        ProductAvailabilityCard(
+            stock = product.stock,
+            shippingInformation = product.shippingInformation,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+
+        ProductDescription(
+            description = product.description,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+
+        ProductWarrantyField(
+            warrantyInformation = product.warrantyInformation,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+
+        AddToCartButton(
+            onClick = onAddToCartClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductDetailScreenPreview() {
+    MaterialTheme {
+        ProductDetailScreen(
+            product = sampleProduct(),
+            onAddToCartClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductDetailScreenOutOfStockPreview() {
+    MaterialTheme {
+        ProductDetailScreen(
+            product = sampleProductOutOfStock(),
+            onAddToCartClick = {}
         )
     }
 }
