@@ -4,27 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -35,9 +28,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ProductHomeScreen(
-                        featuredProduct = sampleProduct(),
-                        onFeaturedProductClick = { },
+                    ProfileScreen(
+                        profile = sampleDeveloperProfile(),
+                        onContactClick = {},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -46,406 +39,138 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Modèle de données pour un projet ou une expérience
+data class ProjectUi(
+    val id: Int,
+    val title: String,
+    val techStack: String,
+    val description: String,
+    val rating: Double
+)
+
+// Modèle complet du profil développeur
+data class DeveloperProfileUi(
+    val name: String,
+    val role: String,
+    val bio: String,
+    val email: String,
+    val location: String,
+    val isAvailable: Boolean,
+    val skills: List<String>,
+    val projects: List<ProjectUi>
+)
+
+// Jeu de données local basé sur ton profil initial
+fun sampleDeveloperProfile(): DeveloperProfileUi {
+    return DeveloperProfileUi(
+        name = "Nicolas Veysset",
+        role = "Développeur Mobile & Embarqué",
+        bio = "Passionné par l'architecture logicielle, Kotlin et Jetpack Compose.",
+        email = "nicolas.veysset@exemple.fr",
+        location = "Bordeaux, France",
+        isAvailable = true,
+        skills = listOf("Kotlin", "Jetpack Compose", "Docker", "Python", "Git"),
+        projects = listOf(
+            ProjectUi(
+                id = 1,
+                title = "Product Explorer",
+                techStack = "Kotlin • Jetpack Compose • Material 3",
+                description = "Application catalogue de produits locaux avec listes modernes et thème clair/sombre.",
+                rating = 4.8
+            ),
+            ProjectUi(
+                id = 2,
+                title = "Planning Médical Mobile",
+                techStack = "React Native • Expo • TypeScript",
+                description = "Application mobile de gestion d'emplois du temps destinée aux praticiens.",
+                rating = 4.6
+            ),
+            ProjectUi(
+                id = 3,
+                title = "Banc de Test Automatisé",
+                techStack = "Python • Docker • Robot Framework",
+                description = "Infrastructure conteneurisée de validation logicielle pour systèmes embarqués.",
+                rating = 4.9
+            )
+        )
+    )
+}
+
 @Composable
-fun HomeHeader(
+fun ProfileHeader(
+    name: String,
+    role: String,
+    bio: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Product Explorer",
-            style = MaterialTheme.typography.headlineMedium
+            text = name,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "Découvrez les produits du moment",
+            text = role,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = bio,
             style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
 @Composable
-fun SearchPreviewBar(
+fun SkillBadge(
+    skillName: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp
-    ) {
+    Surface(modifier = modifier) {
         Text(
-            text = "Rechercher un produit...",
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium
+            text = "• $skillName",
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
 }
 
 @Composable
-fun ProductQuickInfoRow(
-    price: Double,
-    rating: Double,
-    stock: Int,
+fun ProfileScreen(
+    profile: DeveloperProfileUi,
+    onContactClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = "$price €",
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "★ $rating",
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "$stock en stock",
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-fun FeaturedProductSection(
-    product: ProductUi,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        tonalElevation = 4.dp
+    // Remplacement de la Column statique par une LazyColumn pour supporter tout l'écran
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "Produit mis en avant",
-                style = MaterialTheme.typography.titleMedium
+        item {
+            ProfileHeader(
+                name = profile.name,
+                role = profile.role,
+                bio = profile.bio
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                text = product.brand,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            ProductQuickInfoRow(
-                price = product.price,
-                rating = product.rating,
-                stock = product.stock
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onClick) {
-                Text(text = "Voir le produit")
+        }
+        item {
+            Button(
+                onClick = onContactClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Me contacter")
             }
         }
     }
 }
 
-@Composable
-fun ProductHomeScreen(
-    featuredProduct: ProductUi,
-    onFeaturedProductClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        HomeHeader()
-        Spacer(modifier = Modifier.height(24.dp))
-        SearchPreviewBar()
-        Spacer(modifier = Modifier.height(24.dp))
-        FeaturedProductSection(
-            product = featuredProduct,
-            onClick = onFeaturedProductClick
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun ProductHomeScreenPreview() {
+fun ProfileScreenAvailablePreview() {
     MaterialTheme {
-        ProductHomeScreen(
-            featuredProduct = sampleProduct(),
-            onFeaturedProductClick = {}
-        )
-    }
-}
-
-data class ProductUi(
-    val title: String,
-    val brand: String,
-    val category: String,
-    val description: String,
-    val price: Double,
-    val discountPercentage: Double,
-    val rating: Double,
-    val stock: Int,
-    val warrantyInformation: String,
-    val shippingInformation: String
-)
-
-fun sampleProduct(): ProductUi {
-    return ProductUi(
-        title = "Smartphone Toto X",
-        brand = "TotoTech",
-        category = "Smartphones",
-        description = "Un smartphone léger avec un écran lumineux, une bonne autonomie et un design moderne.",
-        price = 699.99,
-        discountPercentage = 12.9,
-        rating = 4.6,
-        stock = 34,
-        warrantyInformation = "Garantie constructeur 2 ans",
-        shippingInformation = "Livraison estimée: 3 à 5 jours ouvrés"
-    )
-}
-
-fun sampleProductOutOfStock(): ProductUi {
-    return ProductUi(
-        title = "Casque Audio Pulse",
-        brand = "SoundPeak",
-        category = "Audio",
-        description = "Un casque confortable conçu pour écouter de la musique, " +
-                "suivre des cours en ligne et travailler dans de bonnes conditions.",
-        price = 129.99,
-        discountPercentage = 0.0,
-        rating = 4.2,
-        stock = 0,
-        warrantyInformation = "Garantie constructeur : 1 an",
-        shippingInformation = "Produit temporairement indisponible"
-    )
-}
-
-@Composable
-fun ProductImage(
-    productTitle: String,
-    modifier: Modifier = Modifier
-) {
-    Image(
-        painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-        contentDescription = "Image du produit $productTitle",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun ProductHeader(
-    title: String,
-    brand: String,
-    category: String,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Text(
-            text = brand,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = category,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-fun ProductPriceCard(
-    price: Double,
-    discountPercentage: Double,
-    modifier: Modifier = Modifier
-) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "$price €",
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                text = "Remise : $discountPercentage %",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun ProductRating(
-    rating: Double,
-    modifier: Modifier = Modifier
-) {
-    Row(modifier = modifier) {
-        Icon(
-            imageVector = Icons.Default.Star,
-            contentDescription = "Note du produit"
-        )
-        Text(
-            text = "$rating / 5",
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-}
-
-@Composable
-fun ProductAvailabilityCard(
-    stock: Int,
-    shippingInformation: String,
-    modifier: Modifier = Modifier
-) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Disponibilité",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Stock : $stock unités",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = shippingInformation,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun ProductDescription(
-    description: String,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = "Description",
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = description,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
-}
-
-@Composable
-fun ProductWarrantyField(
-    warrantyInformation: String,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = warrantyInformation,
-        onValueChange = {},
-        readOnly = true,
-        label = { Text(text = "Garantie") },
-        modifier = modifier
-    )
-}
-
-@Composable
-fun AddToCartButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text(text = "Ajouter au panier")
-    }
-}
-
-@Composable
-fun ProductDetailScreen(
-    product: ProductUi,
-    onAddToCartClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        ProductImage(
-            productTitle = product.title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
-
-        ProductHeader(
-            title = product.title,
-            brand = product.brand,
-            category = product.category
-        )
-
-        ProductPriceCard(
-            price = product.price,
-            discountPercentage = product.discountPercentage,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
-
-        ProductRating(
-            rating = product.rating,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
-        ProductAvailabilityCard(
-            stock = product.stock,
-            shippingInformation = product.shippingInformation,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
-
-        ProductDescription(
-            description = product.description,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
-        ProductWarrantyField(
-            warrantyInformation = product.warrantyInformation,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
-
-        AddToCartButton(
-            onClick = onAddToCartClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductDetailScreenPreview() {
-    MaterialTheme {
-        ProductDetailScreen(
-            product = sampleProduct(),
-            onAddToCartClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductDetailScreenOutOfStockPreview() {
-    MaterialTheme {
-        ProductDetailScreen(
-            product = sampleProductOutOfStock(),
-            onAddToCartClick = {}
+        ProfileScreen(
+            profile = sampleDeveloperProfile(),
+            onContactClick = {}
         )
     }
 }
