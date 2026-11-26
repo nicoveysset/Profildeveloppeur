@@ -22,7 +22,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -45,6 +50,7 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         profile = sampleDeveloperProfile(),
                         onContactClick = {},
+                        onProjectClick = {},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -190,7 +196,6 @@ fun ProfileHeader(
     }
 }
 
-// Badge réutilisable pour afficher une compétence technique
 @Composable
 fun SkillBadge(
     skillName: String,
@@ -210,7 +215,6 @@ fun SkillBadge(
     }
 }
 
-// Section regroupant le titre et le défilement horizontal des compétences
 @Composable
 fun SkillsSection(
     skills: List<String>,
@@ -223,7 +227,6 @@ fun SkillsSection(
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
-        // Liste horizontale performante remplaçant l'ancienne boucle forEach
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -234,10 +237,80 @@ fun SkillsSection(
     }
 }
 
+// Carte réutilisable affichant un projet et une action associée
+@Composable
+fun ProjectCard(
+    project: ProjectUi,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Ligne supérieure : titre du projet à gauche, icône étoile et note à droite
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = project.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Note du projet",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${project.rating}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = project.techStack,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = project.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(onClick = onClick) {
+                Text(text = "Voir le projet")
+            }
+        }
+    }
+}
+
 @Composable
 fun ProfileScreen(
     profile: DeveloperProfileUi,
     onContactClick: () -> Unit,
+    onProjectClick: (ProjectUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -257,6 +330,23 @@ fun ProfileScreen(
             SkillsSection(skills = profile.skills)
         }
         item {
+            Text(
+                text = "Projets réalisés",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        // Affichage performant de la liste des projets avec clé unique
+        items(
+            items = profile.projects,
+            key = { project -> project.id }
+        ) { project ->
+            ProjectCard(
+                project = project,
+                onClick = { onProjectClick(project) }
+            )
+        }
+        item {
             Button(
                 onClick = onContactClick,
                 modifier = Modifier.fillMaxWidth()
@@ -273,7 +363,8 @@ fun ProfileScreenAvailablePreview() {
     MaterialTheme {
         ProfileScreen(
             profile = sampleDeveloperProfile(),
-            onContactClick = {}
+            onContactClick = {},
+            onProjectClick = {}
         )
     }
 }
