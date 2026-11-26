@@ -42,13 +42,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.profildeveloppeur.ui.theme.ProfilDeveloppeurTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
+            ProfilDeveloppeurTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ProfileScreen(
                         profile = sampleDeveloperProfile(),
@@ -139,7 +140,6 @@ fun ProfileHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Box contenant l'avatar circulaire et un indicateur d'état superposé
                 Box(
                     modifier = Modifier.size(80.dp)
                 ) {
@@ -152,7 +152,6 @@ fun ProfileHeader(
                             .background(MaterialTheme.colorScheme.secondaryContainer)
                             .padding(12.dp)
                     )
-                    // Pastille de statut superposée sans masquer l'icône centrale
                     Surface(
                         modifier = Modifier
                             .size(20.dp)
@@ -182,7 +181,6 @@ fun ProfileHeader(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(6.dp))
-                    // Badge textuel de disponibilité lisible
                     Surface(
                         shape = MaterialTheme.shapes.small,
                         color = if (isAvailable) {
@@ -440,15 +438,30 @@ fun ProfileScreen(
         }
     }
 }
-
 @Preview(
     showBackground = true,
-    heightDp = 960,
+    heightDp = 1220,
     name = "Profil Light Theme"
 )
 @Composable
 fun ProfileScreenLightPreview() {
-    MaterialTheme {
+    ProfilDeveloppeurTheme(darkTheme = false) {
+        ProfileScreen(
+            profile = sampleDeveloperProfile(),
+            onContactClick = {},
+            onProjectClick = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    heightDp = 1220,
+    name = "Profil Dark Theme"
+)
+@Composable
+fun ProfileScreenDarkPreview() {
+    ProfilDeveloppeurTheme(darkTheme = true) {
         ProfileScreen(
             profile = sampleDeveloperProfile(),
             onContactClick = {},
