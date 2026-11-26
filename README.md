@@ -1,35 +1,35 @@
-# Profil Développeur Compose
+# Profil Développeur - Jetpack Compose
 
-## Description
-Application Android développée avec Jetpack Compose affichant la fiche de profil d'un développeur. L'interface présente l'en-tête du profil, le statut de disponibilité, une liste de compétences ainsi qu'une zone d'action interactive.
+## 1. Description
+Application Android développée avec Jetpack Compose présentant le profil d'un développeur (identité, disponibilité, compétences, projets et contact) à partir de données locales en Kotlin.
 
-## Notions utilisées
-- Fonctions Composables
-- Passages de paramètres
-- Modifiers et chaînage de Modifiers
-- Distinction entre padding externe et padding interne
-- Callbacks d'événements
-- Previews d'interface avec données variables
-- Accessibilité de base
+## 2. Composants Compose utilisés
+- Text : titres, descriptions, badges et notes.
+- Button : actions « Voir le projet » et « Me contacter ».
+- Icon : icônes pour les notes (Star), l'email (Email) et la localisation (LocationOn).
+- Image : avatar circulaire du développeur (CircleShape).
+- Card : cartes uniformes (ProjectCard) pour chaque projet.
+- OutlinedTextField : champs en lecture seule (readOnly = true) pour l'email et la localisation.
 
-## Questions
+## 3. Layouts utilisés
+- Column : structuration verticale des cartes et sections.
+- Row : alignement horizontal de l'avatar avec l'identité, et du titre d'un projet avec sa note.
+- Box : superposition de l'avatar et de la pastille de disponibilité (Alignment.BottomEnd).
+- Spacer : espacements réguliers entre les éléments.
+- Surface : conteneurs visuels cohérents avec le thème (en-tête, badges, contact).
 
-1. - `ProfileHeader` (nom, rôle, description)
-   - `SkillBadge` (badge d'une compétence)
-   - `ActionButton` (bouton d'action avec accessibilité)
-   - `ProfileCard` (conteneur assemblant le profil)
-   - `ProfileScreen` (écran principal)
+## 4. Listes modernes (LazyColumn et LazyRow)
+- LazyColumn : conteneur principal de l'écran regroupant les sections fixes (item) et la liste des projets (items avec clé stable key = project.id) affichés via ProjectCard.
+- LazyRow : défilement horizontal des compétences techniques affichées avec le composable SkillBadge.
 
-2.  - Le composable `ProfileScreen`.
+## 5. Choix de thème (Material Design 3)
+- Couleurs (ColorScheme) : palettes LightColorScheme et DarkColorScheme basées sur un bleu professionnel (primary) avec un contraste adapté entre le fond (background) et les cartes (surface).
+- Typographie (Typography) : styles personnalisés (ProfileTypography) pour hiérarchiser titres, sous-titres et descriptions.
+- Formes (Shapes) : arrondis harmonisés (ProfileShapes de 8.dp à 32.dp) appliqués aux cartes, surfaces et badges.
 
-3.  - Dans `ProfileScreen`
+## 6. Capture d'écran
+<img width="608" height="817" alt="image" src="https://github.com/user-attachments/assets/fc7facba-34af-4464-be35-4b0dfef46050" />
 
-4.  - Dans `ProfileCard`et dans les sous-composants comme `SkillBadge` et `ActionButton`.
 
-5.  - `ActionButton` reçoit le callback, transmis depuis `ProfileCard` puis `ProfileScreen`.
-
-6.  - L'utilisation du modificateur `.semantics { contentDescription = "Action : $label" }`.
-
-7.  - Ils reçoivent leurs données via des paramètres et acceptent un paramètre `modifier: Modifier = Modifier`.
-  
-<img width="807" height="481" alt="image" src="https://github.com/user-attachments/assets/d83144a1-71f6-4902-9c82-29863889edc5" />
+## 7. Notions du chapitre Compose UI réutilisées
+J'ai réutilisé le découpage en composables réutilisables avec paramètres et callbacks, les layouts de base (Column, Row, Box, Surface, Spacer), les listes optimisées LazyColumn et LazyRow, ainsi que la personnalisation Material Design 3 (ColorScheme, Typography, Shapes) avec support des modes clair et sombre via des previews dédiées.
