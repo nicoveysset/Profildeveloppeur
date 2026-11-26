@@ -4,20 +4,32 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -101,23 +113,82 @@ fun ProfileHeader(
     name: String,
     role: String,
     bio: String,
+    isAvailable: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = role,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            text = bio,
-            style = MaterialTheme.typography.bodyMedium
-        )
+    // Conteneur visuel principal de l'en-tête
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 3.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Alignement horizontal de l'avatar et des informations principales
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Box permettant de superposer le badge de statut sur l'avatar
+                Box(
+                    modifier = Modifier.size(76.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = android.R.drawable.ic_menu_myplaces),
+                        contentDescription = "Avatar de $name",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .padding(8.dp)
+                    )
+                    // Badge superposé en bas à droite de l'image
+                    Surface(
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        shape = MaterialTheme.shapes.small,
+                        color = if (isAvailable) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        },
+                        contentColor = if (isAvailable) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onError
+                        }
+                    ) {
+                        Text(
+                            text = if (isAvailable) "Dispo" else "Occupé",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = role,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = bio,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
@@ -140,7 +211,6 @@ fun ProfileScreen(
     onContactClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Remplacement de la Column statique par une LazyColumn pour supporter tout l'écran
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -150,7 +220,8 @@ fun ProfileScreen(
             ProfileHeader(
                 name = profile.name,
                 role = profile.role,
-                bio = profile.bio
+                bio = profile.bio,
+                isAvailable = profile.isAvailable
             )
         }
         item {
