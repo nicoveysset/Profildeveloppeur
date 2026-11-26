@@ -23,12 +23,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -127,6 +130,7 @@ fun ProfileHeader(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp
     ) {
         Column(
@@ -135,38 +139,32 @@ fun ProfileHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Box contenant l'avatar circulaire et un indicateur d'état superposé
                 Box(
-                    modifier = Modifier.size(76.dp)
+                    modifier = Modifier.size(80.dp)
                 ) {
                     Image(
                         painter = painterResource(id = android.R.drawable.ic_menu_myplaces),
                         contentDescription = "Avatar de $name",
                         modifier = Modifier
-                            .size(72.dp)
+                            .size(76.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(8.dp)
+                            .padding(12.dp)
                     )
+                    // Pastille de statut superposée sans masquer l'icône centrale
                     Surface(
-                        modifier = Modifier.align(Alignment.BottomEnd),
-                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.BottomEnd),
+                        shape = CircleShape,
                         color = if (isAvailable) {
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.error
                         },
-                        contentColor = if (isAvailable) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.onError
-                        }
-                    ) {
-                        Text(
-                            text = if (isAvailable) "Dispo" else "Occupé",
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
+                        tonalElevation = 4.dp
+                    ) {}
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -174,23 +172,45 @@ fun ProfileHeader(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = name,
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = role,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    // Badge textuel de disponibilité lisible
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = if (isAvailable) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.errorContainer
+                        },
+                        contentColor = if (isAvailable) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onErrorContainer
+                        }
+                    ) {
+                        Text(
+                            text = if (isAvailable) "Disponible" else "Indisponible",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = bio,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -237,7 +257,6 @@ fun SkillsSection(
     }
 }
 
-// Carte réutilisable affichant un projet et une action associée
 @Composable
 fun ProjectCard(
     project: ProjectUi,
@@ -257,7 +276,6 @@ fun ProjectCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Ligne supérieure : titre du projet à gauche, icône étoile et note à droite
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -307,6 +325,72 @@ fun ProjectCard(
 }
 
 @Composable
+fun ContactSection(
+    email: String,
+    location: String,
+    onContactClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Contact & Informations",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(text = "Email") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Icône Email"
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = location,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(text = "Localisation") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Icône Localisation"
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onContactClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Me contacter")
+            }
+        }
+    }
+}
+
+@Composable
 fun ProfileScreen(
     profile: DeveloperProfileUi,
     onContactClick: () -> Unit,
@@ -314,7 +398,9 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -336,7 +422,6 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        // Affichage performant de la liste des projets avec clé unique
         items(
             items = profile.projects,
             key = { project -> project.id }
@@ -347,19 +432,22 @@ fun ProfileScreen(
             )
         }
         item {
-            Button(
-                onClick = onContactClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Me contacter")
-            }
+            ContactSection(
+                email = profile.email,
+                location = profile.location,
+                onContactClick = onContactClick
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    heightDp = 960,
+    name = "Profil Light Theme"
+)
 @Composable
-fun ProfileScreenAvailablePreview() {
+fun ProfileScreenLightPreview() {
     MaterialTheme {
         ProfileScreen(
             profile = sampleDeveloperProfile(),
