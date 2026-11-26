@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -116,7 +118,6 @@ fun ProfileHeader(
     isAvailable: Boolean,
     modifier: Modifier = Modifier
 ) {
-    // Conteneur visuel principal de l'en-tête
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -125,11 +126,9 @@ fun ProfileHeader(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Alignement horizontal de l'avatar et des informations principales
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Box permettant de superposer le badge de statut sur l'avatar
                 Box(
                     modifier = Modifier.size(76.dp)
                 ) {
@@ -142,7 +141,6 @@ fun ProfileHeader(
                             .background(MaterialTheme.colorScheme.secondaryContainer)
                             .padding(8.dp)
                     )
-                    // Badge superposé en bas à droite de l'image
                     Surface(
                         modifier = Modifier.align(Alignment.BottomEnd),
                         shape = MaterialTheme.shapes.small,
@@ -192,16 +190,47 @@ fun ProfileHeader(
     }
 }
 
+// Badge réutilisable pour afficher une compétence technique
 @Composable
 fun SkillBadge(
     skillName: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(modifier = modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onSecondary
+    ) {
         Text(
-            text = "• $skillName",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            text = skillName,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
         )
+    }
+}
+
+// Section regroupant le titre et le défilement horizontal des compétences
+@Composable
+fun SkillsSection(
+    skills: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Compétences techniques",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        // Liste horizontale performante remplaçant l'ancienne boucle forEach
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(skills) { skill ->
+                SkillBadge(skillName = skill)
+            }
+        }
     }
 }
 
@@ -223,6 +252,9 @@ fun ProfileScreen(
                 bio = profile.bio,
                 isAvailable = profile.isAvailable
             )
+        }
+        item {
+            SkillsSection(skills = profile.skills)
         }
         item {
             Button(
