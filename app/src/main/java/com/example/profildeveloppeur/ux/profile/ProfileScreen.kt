@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,7 +43,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,8 +52,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.profildeveloppeur.model.ProjectUi
+import com.example.profildeveloppeur.model.sampleDeveloperProfile
+import com.example.profildeveloppeur.ui.theme.ProfilDeveloppeurTheme
 
 // En-tête du profil développeur (stateless)
 @Composable
@@ -546,5 +549,74 @@ fun ProfileScreen(
                 )
             }
         }
+    }
+}
+
+// Preview 1 : État initial (recherche vide, tous les projets affichés, aucun favori, thème clair)
+@Preview(
+    showBackground = true,
+    heightDp = 1280,
+    name = "Preview 1 - État initial (Light)"
+)
+@Composable
+fun ProfileScreenInitialPreview() {
+    val profile = sampleDeveloperProfile()
+    ProfilDeveloppeurTheme(darkTheme = false) {
+        ProfileScreen(
+            uiState = ProfileUiState(
+                name = profile.name,
+                role = profile.role,
+                bio = profile.bio,
+                email = profile.email,
+                location = profile.location,
+                isAvailable = profile.isAvailable,
+                skills = profile.skills,
+                projects = profile.projects,
+                searchQuery = "",
+                showOnlyFavorites = false,
+                favoriteProjectIds = emptyList()
+            ),
+            onSearchQueryChange = {},
+            onToggleFavoriteFilter = {},
+            onFavoriteClick = {},
+            onResetFilters = {},
+            onContactClick = {},
+            onProjectClick = {}
+        )
+    }
+}
+
+// Preview 2 : Recherche active + filtre favoris activé + plusieurs favoris (thème sombre)
+@Preview(
+    showBackground = true,
+    heightDp = 1100,
+    name = "Preview 2 - Recherche et Favoris (Dark)"
+)
+@Composable
+fun ProfileScreenFilteredFavoritesPreview() {
+    val profile = sampleDeveloperProfile()
+    val favoriteIds = listOf(1, 3)
+    ProfilDeveloppeurTheme(darkTheme = true) {
+        ProfileScreen(
+            uiState = ProfileUiState(
+                name = profile.name,
+                role = profile.role,
+                bio = profile.bio,
+                email = profile.email,
+                location = profile.location,
+                isAvailable = profile.isAvailable,
+                skills = profile.skills,
+                projects = profile.projects.filter { it.id in favoriteIds },
+                searchQuery = "Kotlin",
+                showOnlyFavorites = true,
+                favoriteProjectIds = favoriteIds
+            ),
+            onSearchQueryChange = {},
+            onToggleFavoriteFilter = {},
+            onFavoriteClick = {},
+            onResetFilters = {},
+            onContactClick = {},
+            onProjectClick = {}
+        )
     }
 }
