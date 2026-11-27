@@ -42,6 +42,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.profildeveloppeur.model.DeveloperProfileUi
+import com.example.profildeveloppeur.model.ProjectUi
+import com.example.profildeveloppeur.model.sampleDeveloperProfile
 import com.example.profildeveloppeur.ui.theme.ProfilDeveloppeurTheme
 
 class MainActivity : ComponentActivity() {
@@ -61,63 +64,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-// Modèle de données pour un projet ou une expérience
-data class ProjectUi(
-    val id: Int,
-    val title: String,
-    val techStack: String,
-    val description: String,
-    val rating: Double
-)
-
-// Modèle complet du profil développeur
-data class DeveloperProfileUi(
-    val name: String,
-    val role: String,
-    val bio: String,
-    val email: String,
-    val location: String,
-    val isAvailable: Boolean,
-    val skills: List<String>,
-    val projects: List<ProjectUi>
-)
-
-// Jeu de données local basé sur ton profil initial
-fun sampleDeveloperProfile(): DeveloperProfileUi {
-    return DeveloperProfileUi(
-        name = "Nicolas Veysset",
-        role = "Développeur Mobile & Embarqué",
-        bio = "Passionné par l'architecture logicielle, Kotlin et Jetpack Compose.",
-        email = "nicolas.veysset@exemple.fr",
-        location = "Bordeaux, France",
-        isAvailable = true,
-        skills = listOf("Kotlin", "Jetpack Compose", "Docker", "Python", "Git"),
-        projects = listOf(
-            ProjectUi(
-                id = 1,
-                title = "Product Explorer",
-                techStack = "Kotlin • Jetpack Compose • Material 3",
-                description = "Application catalogue de produits locaux avec listes modernes et thème clair/sombre.",
-                rating = 4.8
-            ),
-            ProjectUi(
-                id = 2,
-                title = "Planning Médical Mobile",
-                techStack = "React Native • Expo • TypeScript",
-                description = "Application mobile de gestion d'emplois du temps destinée aux praticiens.",
-                rating = 4.6
-            ),
-            ProjectUi(
-                id = 3,
-                title = "Banc de Test Automatisé",
-                techStack = "Python • Docker • Robot Framework",
-                description = "Infrastructure conteneurisée de validation logicielle pour systèmes embarqués.",
-                rating = 4.9
-            )
-        )
-    )
 }
 
 @Composable
@@ -438,6 +384,7 @@ fun ProfileScreen(
         }
     }
 }
+
 @Preview(
     showBackground = true,
     heightDp = 1220,
