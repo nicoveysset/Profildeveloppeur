@@ -28,16 +28,16 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Preview globale directement accessible depuis MainActivity (utilise ProfileScreen stateless)
+// Preview 1 : État initial (recherche vide, tous les projets affichés, aucun favori, thème clair)
 @Preview(
     showBackground = true,
     heightDp = 1280,
-    name = "MainActivity - Aperçu Profil"
+    name = "Preview 1 - État initial (Light)"
 )
 @Composable
-fun MainActivityProfilePreview() {
+fun MainActivityInitialPreview() {
     val profile = sampleDeveloperProfile()
-    ProfilDeveloppeurTheme {
+    ProfilDeveloppeurTheme(darkTheme = false) {
         ProfileScreen(
             uiState = ProfileUiState(
                 name = profile.name,
@@ -47,7 +47,79 @@ fun MainActivityProfilePreview() {
                 location = profile.location,
                 isAvailable = profile.isAvailable,
                 skills = profile.skills,
-                projects = profile.projects
+                projects = profile.projects,
+                searchQuery = "",
+                showOnlyFavorites = false,
+                favoriteProjectIds = emptyList()
+            ),
+            onSearchQueryChange = {},
+            onToggleFavoriteFilter = {},
+            onFavoriteClick = {},
+            onResetFilters = {},
+            onContactClick = {},
+            onProjectClick = {}
+        )
+    }
+}
+
+// Preview 2 : Recherche active + filtre favoris activé + plusieurs favoris (thème sombre)
+@Preview(
+    showBackground = true,
+    heightDp = 1100,
+    name = "Preview 2 - Recherche et Favoris (Dark)"
+)
+@Composable
+fun MainActivityFilteredFavoritesPreview() {
+    val profile = sampleDeveloperProfile()
+    val favoriteIds = listOf(1, 3)
+    ProfilDeveloppeurTheme(darkTheme = true) {
+        ProfileScreen(
+            uiState = ProfileUiState(
+                name = profile.name,
+                role = profile.role,
+                bio = profile.bio,
+                email = profile.email,
+                location = profile.location,
+                isAvailable = profile.isAvailable,
+                skills = profile.skills,
+                projects = profile.projects.filter { it.id in favoriteIds },
+                searchQuery = "Kotlin",
+                showOnlyFavorites = true,
+                favoriteProjectIds = favoriteIds
+            ),
+            onSearchQueryChange = {},
+            onToggleFavoriteFilter = {},
+            onFavoriteClick = {},
+            onResetFilters = {},
+            onContactClick = {},
+            onProjectClick = {}
+        )
+    }
+}
+
+// Preview 3 : Aucun résultat trouvé (recherche sans correspondance + bouton de réinitialisation)
+@Preview(
+    showBackground = true,
+    heightDp = 900,
+    name = "Preview 3 - Aucun résultat (Light)"
+)
+@Composable
+fun MainActivityEmptyResultPreview() {
+    val profile = sampleDeveloperProfile()
+    ProfilDeveloppeurTheme(darkTheme = false) {
+        ProfileScreen(
+            uiState = ProfileUiState(
+                name = profile.name,
+                role = profile.role,
+                bio = profile.bio,
+                email = profile.email,
+                location = profile.location,
+                isAvailable = profile.isAvailable,
+                skills = profile.skills,
+                projects = emptyList(),
+                searchQuery = "Swift",
+                showOnlyFavorites = false,
+                favoriteProjectIds = listOf(1)
             ),
             onSearchQueryChange = {},
             onToggleFavoriteFilter = {},
